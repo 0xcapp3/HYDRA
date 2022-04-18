@@ -1,2 +1,4 @@
 # HYDRA
-Individual project for IOT course.
+HYDRoponic Autonoumus system
+
+
