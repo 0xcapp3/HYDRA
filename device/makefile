@@ -1,4 +1,4 @@
-APPLICATION ?= hydra_client
+APPLICATION ?= hydra_device
 
 BOARD ?= nucleo-f401re
 
@@ -9,6 +9,38 @@ DEBUG ?= 1
 
 # Change this to 0 show compiler invocation lines by default:
 QUIET ?= 1
+
+# Include packages that pull up and auto-init the link layer.
+# NOTE: 6LoWPAN will be included if IEEE802.15.4 devices are present
+USEMODULE += netdev_default
+USEMODULE += auto_init_gnrc_netif
+# Specify the mandatory networking modules for IPv6
+USEMODULE += gnrc_ipv6_default
+# Include MQTT-SN
+USEMODULE += emcute
+# Optimize network stack to for use with a single network interface
+USEMODULE += gnrc_netif_single
+USEMODULE += stdio_ethos gnrc_uhcpc
+
+EMCUTE_ID ?= hydra_dev0
+ETHOS_BAUDRATE ?= 115200
+TAP ?= tap0
+USE_DHCPV6 ?= 0
+IPV6_PREFIX ?= fe80:2::/64
+SERVER_ADDR = fec0:affe::1
+SERVER_PORT = 1885
+MQTT_TOPIC_OUT = hydra_uplink
+MQTT_TOPIC_IN = hydra_downlink
+
+CFLAGS += -DSERVER_ADDR='"$(SERVER_ADDR)"'
+CFLAGS += -DSERVER_PORT='$(SERVER_PORT)'
+CFLAGS += -DMQTT_TOPIC_OUT='"$(MQTT_TOPIC_OUT)"'
+CFLAGS += -DMQTT_TOPIC_IN='"$(MQTT_TOPIC_IN)"'
+
+# Allow for env-var-based override of the nodes name (EMCUTE_ID)
+ifneq (,$(EMCUTE_ID))
+  CFLAGS += -DEMCUTE_ID=\"$(EMCUTE_ID)\"
+endif
 
 # Comment this out to disable code in RIOT that does safety checking
 # which is not needed in a production environment but helps in the
@@ -36,9 +68,9 @@ USEPKG += u8g2
 USEMODULE += fmt
 
 # Modules to include:
-# USEMODULE += shell
-# USEMODULE += shell_commands
-# USEMODULE += ps
+USEMODULE += shell
+USEMODULE += shell_commands
+USEMODULE += ps
 
 # BMP280 via I2C
 USEMODULE += bmp280_i2c
@@ -75,5 +107,13 @@ CFLAGS += -DTEST_DISPLAY=$(TEST_DISPLAY)
 CFLAGS += -Wno-unused-parameter
 CFLAGS += -Wno-unused-function
 CFLAGS += -Wno-unused-variable
+CFLAGS += -Wno-unused-but-set-variable
 
+include $(CURDIR)/makefile.ethos.conf
 include $(RIOTBASE)/Makefile.include
+
+
+.PHONY: host-tools
+
+host-tools:
+	$(Q)env -u CC -u CFLAGS $(MAKE) -C $(RIOTTOOLS)
