@@ -3,6 +3,11 @@
 
 #include <stdint.h>
 
+#include "periph/i2c.h"
+
+#include "u8g2.h"
+#include "u8x8_riotos.h"
+
 /**
  * @brief   RIOT-OS logo, 64x32 pixels at 8 pixels per byte.
  */
@@ -32,5 +37,7 @@ static const uint8_t riot_logo[] = {
 };
 
 static const uint8_t hydra_logo[] = {};
+
+int init_oled_display(u8g2_t);
 
 #endif
