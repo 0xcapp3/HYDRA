@@ -51,5 +51,14 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
+docs/
+
 bin/
 mosquitto.rsmb/
+bridge/aws-iot-device-sdk-python/
+
+*.pem
+*.key
+*.crt
+
+*.lock
