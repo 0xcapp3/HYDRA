@@ -3,137 +3,318 @@
 #include "sh1106.h"
 #include "sen0161.h"
 #include "bmp280.h"
+#include "leds.h"
+#include "net.h"
 
-#include "periph/gpio.h"
-#include "periph/i2c.h"
-#include "periph/adc.h"
-
-#include "analog_util.h"
-
-#include "net/emcute.h"
+// #include "periph/gpio.h"
+// #include "periph/i2c.h"
 
 #include "timex.h"
 #include "xtimer.h"
 #include "ztimer.h"
 
-#include "u8g2.h"
-#include "u8x8_riotos.h"
-
-#include "bmx280.h"
-#include "bmx280_params.h"
+// #include "u8g2.h"
+// #include "u8x8_riotos.h"
 
 #include "mutex.h"
 
-#include "net.h"
+#ifndef TEST_I2C
+#error "TEST_I2C not defined"
+#endif
+#ifndef TEST_ADDR
+#error "TEST_ADDR not defined"
+#endif
+#ifndef TEST_DISPLAY
+#error "TEST_DISPLAY not defined"
+#endif
+#ifndef TEST_PIN_RESET
+#error "TEST_PIN_RESET not defined"
+#endif
 
-// #ifndef TEST_OUTPUT
-// #error "TEST_OUTPUT not defined"
-// #endif
+gpio_t pin_out_r, pin_out_y, pin_out_g;
 
-// #ifndef TEST_I2C
-// #error "TEST_I2C not defined"
-// #endif
-// #ifndef TEST_ADDR
-// #error "TEST_ADDR not defined"
-// #endif
-// #ifndef TEST_DISPLAY
-// #error "TEST_DISPLAY not defined"
-// #endif
-// #ifndef TEST_PIN_RESET
-// #error "TEST_PIN_RESET not defined"
-// #endif
-
-static bmx280_t bmp280;
-static mutex_t bmp280_lock = MUTEX_INIT;
+bmx280_t bmp280;
+mutex_t bmp280_lock = MUTEX_INIT;
 static char bmp280_thread_stack[THREAD_STACKSIZE_MAIN];
 
-static mutex_t sen0161_lock = MUTEX_INIT;
+mutex_t sen0161_lock = MUTEX_INIT;
 static char sen0161_thread_stack[THREAD_STACKSIZE_DEFAULT];
 
 static char sh1106_thread_stack[THREAD_STACKSIZE_DEFAULT];
 
-void set_pin(gpio_t pin) {
-    printf("Set pin to HIGH\r\n");
-    gpio_set(pin);
-}
+static char hydra_thread_stack[THREAD_STACKSIZE_DEFAULT];
 
-void clear_pin(gpio_t pin) {
-    printf("Set pin to LOW\r\n");
-    gpio_clear(pin);
-}
+static char leds_thread_stack[THREAD_STACKSIZE_DEFAULT];
+
+uint16_t global_temperature;
+uint32_t global_pressure;
+float global_ph;
+state_e global_state;
 
 void on_pub(const emcute_topic_t *topic, void *data, size_t len) {
     char *in = (char *)data;
-    printf("### got publication for topic '%s' [%i] ###\n",
-           topic->name, (int)topic->id);
+    printf("### got publication for topic '%s' [%i] ###\n", topic->name, (int)topic->id);
 
     for(size_t i = 0; i < len; i++) {
         printf("%c", in[i]);
     }
+
     puts("");
-
 }
 
-void send(int val) {
-    printf("VALUE: %d\n",val);
-    char str[50];
-    sprintf(str,"{\"id\":\"%s\",\"pressed_key\":\"%d\"}",EMCUTE_ID,val);
-    mqtt_pub(MQTT_TOPIC_OUT,str,0);
+void send(char* temp, char* pres, char* ph) {
+    printf("VALUES: temp: %f | pres: %f | pH: %f\r\n", atof(temp), atof(pres), atof(ph));
+
+    // const char* msg_struct = "{\"cluster_id\":\"%d\",\"device_id\":\"%s\",\"temperature\":\"%f\",\"pressure\":\"%f\",\"ph\":\"%f\"}";
+    // const char* msg_struct  = "{ cluster_id: %d, device_id: %s, temperature: %f, pressure: %f, ph: %f }";
+    int length = snprintf(NULL, 0, "{\"cluster_id\":\"%d\",\"device_id\":\"%s\",\"temperature\":\"%s\",\"pressure\":\"%s\",\"ph\":\"%s\"}", 1, EMCUTE_ID, temp, pres, ph);
+    char* msg = malloc(length + 1);
+    /* TODO: check malloc return value*/
+
+    snprintf(msg, length + 1, "{\"cluster_id\":\"%d\",\"device_id\":\"%s\",\"temperature\":\"%s\",\"pressure\":\"%s\",\"ph\":\"%s\"}", 1, EMCUTE_ID, temp, pres, ph);
+    printf("[=] MQTT_TOPIC_OUT: %s\r\n", MQTT_TOPIC_OUT);
+    mqtt_pub(MQTT_TOPIC_OUT, msg, 0);
+
+    free(msg);
 }
 
-// static void *sh1106_thread(void *arg) {
-//     (void) arg;
+state_e get_status(uint16_t temperature, uint32_t pressure, float pH) {
 
-//     uint32_t screen = 0;
-//     u8g2_t u8g2 = (u8g2_t) arg;
+    int cnt = 0;
+    float tmp_temp = temperature / 100;
+    float tmp_pres = pressure / 10000;
+    printf("[+] %f | %f\r\n", tmp_temp, tmp_pres);
+    int temp_error = (tmp_temp >= MIN_TEMP && tmp_temp <= MAX_TEMP) ? 0 : 1;
+    printf("[+] temp error: %d\r\n", temp_error);
 
-//     while (1) {
-//         printf("First page...\r\n");
-//         u8g2_FirstPage(&u8g2);
+    int press_error = 0;
+    printf("[+] press error: %d\r\n", press_error);
 
-//         do {
-//             printf("Next page...\r\n");
-//             printf("Draw color...\r\n");
-//             u8g2_SetDrawColor(&u8g2, 1);
-//             printf("Set font...\r\n");
-//             u8g2_SetFont(&u8g2, u8g2_font_helvB12_tf);
+    int ph_error = (pH >= MIN_PH && pH <= MAX_PH) ? 0 : 1;
+    printf("[+] ph error: %d\r\n", ph_error);
 
-//             printf("Before switch...\r\n");
-//             switch (screen) {
-//                 case 0:
-//                     printf("Case 0\r\n");
-//                     u8g2_DrawStr(&u8g2, 12, 22, "THIS");
-//                     break;
-//                 case 1:
-//                     printf("Case 1\r\n");
-//                     u8g2_DrawStr(&u8g2, 24, 22, "IS");
-//                     break;
-//                 case 2:
-//                     printf("Case 2\r\n");
-//                     u8g2_DrawStr(&u8g2, 12, 22, "HYDRA");
-//                     break;
-//                 case 3:
-//                     printf("Case 3\r\n");
-//                     u8g2_DrawBitmap(&u8g2, 0, 0, 8, 32, riot_logo);
-//                     break;
-//             }
+    cnt = temp_error + press_error + ph_error;
+    printf("[+] cnt: %d\r\n", cnt);
 
-//             printf("After switch...\r\n");
+    if (cnt == 1) {
+        return SOMETHING_WRONG;
+    }
+    else if (cnt == 2) {
+        return PANIC;
+    }
 
-//         } while (u8g2_NextPage(&u8g2));
+    return OK;
+}
 
-//         printf("Before show...\r\n");
+static void* hydra_thread(void *arg) {
+    (void) arg;
 
-//         /* show screen in next iteration */
-//         screen = (screen + 1) % 4;
+    state_e current_state = OK;
 
-//         /* sleep a little */
-//         // ztimer_sleep(ZTIMER_USEC, US_PER_SEC);
-//         xtimer_sleep(3);
-//     }
+    while (1) {
 
-//     return 0;
-// }
+        current_state = get_status(global_temperature, global_pressure, global_ph);
+        global_state = current_state;
+
+        send(raw_temperature(global_temperature), raw_pressure(global_pressure), raw_pH(global_ph));
+        xtimer_sleep(3);
+    }
+    
+    return 0;
+}
+
+static void* leds_thread(void *arg) {
+    (void) arg;
+
+    while (1) {
+        if (global_state == OK) {
+
+            if (gpio_read(pin_out_g) != 0) {
+                continue;
+            }
+            else if (gpio_read(pin_out_y) != 0) {
+                clear_pin(pin_out_g);
+
+                set_pin(pin_out_y);
+            }
+            else {
+                clear_pin(pin_out_g);
+
+                set_pin(pin_out_r);
+            }
+        }
+        else if (global_state == SOMETHING_WRONG) {
+
+            if (gpio_read(pin_out_y) != 0) {
+                continue;
+            }
+            else if (gpio_read(pin_out_g) != 0) {
+                clear_pin(pin_out_y);
+
+                set_pin(pin_out_g);
+            }
+            else {
+                clear_pin(pin_out_y);
+
+                set_pin(pin_out_r);
+            }
+        }
+        else {
+           if (gpio_read(pin_out_r) != 0) {
+                continue;
+            }
+            else if (gpio_read(pin_out_y) != 0) {
+                clear_pin(pin_out_r);
+
+                set_pin(pin_out_y);
+            }
+            else {
+                clear_pin(pin_out_r);
+
+                set_pin(pin_out_g);
+            }
+        }
+
+        xtimer_sleep(3);
+    }
+    
+    return 0;
+}
+
+static void *sh1106_thread(void *u8g2) {
+    (void) u8g2;
+    uint32_t screen = 0;
+
+    char* tmp_string = NULL;
+    char* pres_string = NULL;
+    char* ph_string = NULL;
+
+    uint16_t temperature = 0;
+    uint32_t pressure = 0;
+    float ph = 0.0;
+
+    
+
+    // u8g2_ClearBuffer(u8g2);
+    // u8g2_ClearDisplay(u8g2);
+
+    /* use snprintf to convert numbers to strings and calculate their lenght*/
+    // https://stackoverflow.com/questions/8257714/how-to-convert-an-int-to-string-in-c
+
+    /* set state given data collected */
+
+    // check pressure
+    // check temperature
+    // check ph
+
+    /* send them with mqtt? */
+
+    /* display them */
+
+    /* start drawing in a loop */
+    printf("[+] Drawing on screen...\r\n");
+
+    while (1) {
+
+        // printf("First page...\r\n");
+        u8g2_FirstPage(u8g2);
+
+        do {
+            // printf("Next page...\r\n");
+            // printf("Draw color...\r\n");
+            u8g2_SetDrawColor(u8g2, 1);
+            // printf("Set font...\r\n");
+            u8g2_SetFont(u8g2, u8g2_font_helvB12_tf);
+
+            // printf("Before switch...\r\n");
+            switch (screen) {
+                case 0:
+                    // printf("Case 0\r\n");
+                    u8g2_SetFont(u8g2, u8g2_font_helvB08_tf);
+                    u8g2_DrawStr(u8g2, 8, 16, "Welcome to");
+
+                    /* logo print */
+
+                    u8g2_SetFont(u8g2, u8g2_font_helvB12_tf);
+                    u8g2_DrawStr(u8g2, 54, 40, "HYDRA");
+                    break;
+                case 1:
+                    // printf("Case 3\r\n"); 
+                    u8g2_SetFont(u8g2, u8g2_font_helvB08_tf);
+                    u8g2_DrawStr(u8g2, 8, 16, "Powered by");
+                    u8g2_DrawBitmap(u8g2, 54, 20, 8, 32, riot_logo);
+                    break;
+                case 2:
+
+                    // temperature = get_env_raw_temperature(&bmp280);
+                    tmp_string = str_temperature(global_temperature);
+                    printf("[+] Temperature string: %s\r\n", tmp_string);
+
+                    // pressure = get_env_raw_pressure(&bmp280);
+                    pres_string = str_pressure(global_pressure);
+                    printf("[+] Pressure string: %s\r\n", pres_string);
+
+                    // printf("Case 2\r\n");
+                    u8g2_DrawStr(u8g2, 6, 12, tmp_string);
+                    u8g2_DrawStr(u8g2, 6, 36, pres_string);
+
+                    free(tmp_string);
+                    free(pres_string);
+                    break;
+                case 3:
+                    // printf("Case 2\r\n");
+                    // ph = get_ph_value();
+                    ph_string = str_pH(global_ph);
+                    printf("[+] pH string: %s\r\n", ph_string);
+
+                    u8g2_DrawStr(u8g2, 6, 12, ph_string);
+
+                    free(ph_string);
+                    break;
+                case 4:
+                    // printf("Case 2\r\n");
+                    u8g2_SetFont(u8g2, u8g2_font_helvB08_tf);
+
+                    if (global_state == OK) {
+                        u8g2_DrawStr(u8g2, 6, 12, "Everything is all right!");
+                    }
+                    else if (global_state == SOMETHING_WRONG) {
+                        u8g2_DrawStr(u8g2, 6, 12, "We have an error...");
+                    }
+                    else {
+                        u8g2_DrawStr(u8g2, 6, 12, "Call the boss!!!");
+                    }
+                    
+                    // u8g2.setBufferCurrTileRow(0);       // let y=0 be the topmost row of the buffer
+                    // u8g2.clearBuffer();
+                    // u8g2.setFont(u8g2_font_helvB08_tr);
+                    // u8g2.drawStr(2, 8, "abcdefg");
+
+                    // u8g2.setBufferCurrTileRow(2);	// write the buffer to tile row 2 (y=16) on the display
+                    // u8g2.sendBuffer();
+                    // u8g2.setBufferCurrTileRow(4);	// write the same buffer to tile row 4 (y=32) on the display
+                    // u8g2.sendBuffer();
+                    break;
+            }
+            // printf("After switch...\r\n");
+
+        } while (u8g2_NextPage(u8g2));
+
+        /* show screen in next iteration */
+        screen = (screen + 1) % 5;
+
+        /* sleep a little */
+        // ztimer_sleep(ZTIMER_USEC, US_PER_SEC);
+        xtimer_sleep(2);
+        // usleep(1);
+    }
+
+    // free(str_temp);
+    // free(tmp_string);
+    // free(ph_string);
+
+    return 0;
+}
 
 static void *sen0161_thread(void *arg) {
     (void) arg;
@@ -143,11 +324,10 @@ static void *sen0161_thread(void *arg) {
         /* acquire mtx */
         mutex_lock(&sen0161_lock);
 
-        /* ... */
         int sample = 0;
-        int mapped_voltage = 0;
-        int ph = 0;
-        float min_ph_value = 0; // pH is adimensional
+        float mapped_voltage = 0.0;
+        float ph = 0.0;
+        float min_ph_value = 0; // pH is Adimensional, Turbidity is 0 mg/L
         float max_ph_value = 14.0;
 
         sample = adc_sample(ADC_IN_USE, ADC_RES);
@@ -159,23 +339,28 @@ static void *sen0161_thread(void *arg) {
 #ifdef DEBUG
         printf("Sampled bit (raw sample) from pin A0: %d\n", sample);
 #endif
+
         mapped_voltage = sample * (5.0 / pow(2, 12));
+
 #ifdef DEBUG
-        printf("Voltage read: %d V\r\n", mapped_voltage);
+        printf("Voltage read: %f V\r\n", mapped_voltage);
 #endif
+
         ph = adc_util_mapf(sample, ADC_RES, min_ph_value, max_ph_value);
-#ifdef DEBUG
-        printf("pH values: %i \r\n", ph);
+
+#ifndef DEBUG
+        printf("pH values: %2f\r\n", ph);
 #endif
-        printf("[=] pH values: %i \r\n", ph);
 
         if (sample < 0) {
             printf("ADC_LINE(%u): selected resolution not applicable\r\n", ADC_IN_USE);
         }
 
 #ifdef DEBUG
-    printf("ADC_LINE(%u): raw value: %i, ph: %i\r\n", ADC_IN_USE, sample, ph);
+        printf("ADC_LINE(%u): raw value: %i, ph: %f\r\n", ADC_IN_USE, sample, ph);
 #endif
+
+        global_ph = ph;
         
         /* release mtx*/
         mutex_unlock(&sen0161_lock);
@@ -213,12 +398,16 @@ static void *bmp280_thread(void *arg) {
             printf("[=] Pressure: %li.%lu bar\r\n", (pres/100000), (pres%100000));
             
             // H = 44330 * [ 1 - (P / p0) ^ (1 / 5,255) ]
-            double pres0 = 1013.25;
-            double base = (pres / pres0);
-            double exp = (1 / 5.255);
-            double p = pow(base, exp);
-            double h = 44330 * (1 - p);
+            float pres0 = 1013.25;
+            float base = (pres / pres0);
+            float exp = (1 / 5.255);
+            float p = pow(base, exp);
+            float h = 44330 * (1 - p);
             // printf("[=] Altitude from pressure: %lfm \r\n", h);
+
+            // update global value
+            global_temperature = temp;
+            global_pressure = pres;
         }
 
         /* release mtx*/
@@ -233,7 +422,7 @@ static void _bmp280_usage(char *cmd){
     printf("[?] Usage: %s [temperature | pressure | all]\n", cmd);
 }
 
-int bmp280_handler(int argc, char *argv[]) {
+static int bmp280_handler(int argc, char *argv[]) {
     (void) argc;
 
     if (!strcmp(argv[1],"temperature")) {
@@ -268,12 +457,12 @@ int bmp280_handler(int argc, char *argv[]) {
         printf("[=] Pressure: %li.%lu bar\r\n", (pres/100000), (pres%100000));
         
         // H = 44330 * [ 1 - (P / p0) ^ (1 / 5,255) ]
-        double pres0 = 1013.25;
-        double base = (pres / pres0);
-        double exp = (1 / 5.255);
-        double p = pow(base, exp);
-        double h = 44330 * (1 - p);
-        printf("[=] Altitude from pressure: %lfm \r\n", h);
+        // float pres0 = 1013.25;
+        // float base = (pres / pres0);
+        // float exp = (1 / 5.255);
+        // float p = pow(base, exp);
+        // float h = 44330 * (1 - p);
+        // printf("[=] Altitude from pressure: %fm\r\n", h);
     }
     else {
         _bmp280_usage(argv[0]);
@@ -283,20 +472,11 @@ int bmp280_handler(int argc, char *argv[]) {
     return 0;
 }
 
-static int ph_value(void) {
-    // xtimer_ticks32_t last = xtimer_now();
-
-    // int32_t sample = 0;
-    // double mapped_voltage = 0.0;
-    // double ph = 0.0;
-    // double min_ph_value = 0.0;
-    // double max_ph_value = 14.0;
-
-    // TODO: try to switch float to double in order to calculate a float value for ph
+static int sen0161_handler(int argc, char *argv[]) {
     int sample = 0;
-    int mapped_voltage = 0;
-    int ph = 0;
-    float min_ph_value = 0; // pH is Adimensional, Turbidity is 0 mg/L
+    float mapped_voltage = 0;
+    float ph = 0.0;
+    float min_ph_value = 0; // pH is adimensional
     float max_ph_value = 14.0;
 
     sample = adc_sample(ADC_IN_USE, ADC_RES);
@@ -306,55 +486,15 @@ static int ph_value(void) {
     }
 
 #ifdef DEBUG
-    printf("Sampled bit (raw sample) from pin A0: %d\n", sample);
+    printf("[+] Sampled bit (raw sample) from pin A0: %d\n", sample);
 #endif
     mapped_voltage = sample * (5.0 / pow(2, 12));
 #ifdef DEBUG
-    printf("Voltage read: %d V\r\n", mapped_voltage);
+    printf("[+] Voltage read: %.2f V\r\n", mapped_voltage);
 #endif
     ph = adc_util_mapf(sample, ADC_RES, min_ph_value, max_ph_value);
 #ifdef DEBUG
-    printf("pH values: %i \r\n", ph);
-#endif
-
-    if (sample < 0) {
-        printf("ADC_LINE(%u): selected resolution not applicable\r\n", ADC_IN_USE);
-    }
-
-#ifdef DEBUG
-    printf("ADC_LINE(%u): raw value: %i, ph: %i\r\n", ADC_IN_USE, sample, ph);
-#endif
-
-    // while (1) {
-
-    //     xtimer_periodic_wakeup(&last, DELAY);
-    // }
-
-    return 0;
-}
-
-static int bmp280_values(void) {
-    int16_t temp = 0;
-    temp = bmx280_read_temperature(&bmp280);
-#ifdef DEBUG
-    printf("[=] Temperature: %i.%u C\r\n", (temp/100), (temp%100));
-#endif
-    uint32_t pres = 0;
-    pres = bmx280_read_pressure(&bmp280);
-
-#ifdef DEBUG
-    // printf("[=] Pressure: %li.%lu kPa\r\n", (pres/1000), (pres%1000));
-    printf("[=] Pressure: %li.%lu bar\r\n", (pres/100000), (pres%100000));
-#endif
-        
-    // H = 44330 * [ 1 - (P / p0) ^ (1 / 5,255) ]
-    double pres0 = 1013.25;
-    double base = (pres / pres0);
-    double exp = (1 / 5.255);
-    double p = pow(base, exp);
-    double h = 44330 * (1 - p);
-#ifdef DEBUG
-    printf("[=] Altitude from pressure: %lfm \r\n", h);
+    printf("[+] pH values: %.2f \r\n", ph);
 #endif
 
     return 0;
@@ -362,73 +502,47 @@ static int bmp280_values(void) {
 
 static const shell_command_t commands[] = {
     {"bmp","Read BMP280 values", bmp280_handler},
+    {"ph", "Read pH value", sen0161_handler},
     // {"bmc","Periodically reads BMP280 values", bmp280_thread_handler},
     { NULL, NULL, NULL }
 };
 
 int main(void) {
-    uint32_t screen = 0;
-    u8g2_t u8g2;
-
     printf("[+] This is %s on %s!\r\n", RIOT_APPLICATION, RIOT_BOARD);
 
-    /* init semaphore leds */
-    printf("[+] Initializing semaphore leds...\r\n");
-    gpio_t pin_out_r = GPIO_PIN(PORT_B, 4);
+    u8g2_t u8g2;
+    tank_t *hydra_tank;
+    // gpio_t pin_out_r = 0, pin_out_y = 0, pin_out_g = 0;
+
+    // init_leds(pin_out_r, pin_out_y, pin_out_g);
+    // init_bmp280(bmp280);
+    // init_oled_display(u8g2);
+    init_sen0161();
+
+    printf("[+] Init pins' leds\r\n");
+    pin_out_r = GPIO_PIN(PORT_B, 4);
+    // red = GPIO_PIN(PORT_B, 4);
     if (gpio_init(pin_out_r, GPIO_OUT)) {
         printf("[-] Error to initialize GPIO_PIN(%d %d) (aka red led)\r\n", PORT_B, 4);
         return -1;
     }
 
-    gpio_t pin_out_y = GPIO_PIN(PORT_B, 5);
+    pin_out_y = GPIO_PIN(PORT_B, 5);
+    // yellow = GPIO_PIN(PORT_B, 5);
     if (gpio_init(pin_out_y, GPIO_OUT)) {
         printf("[-] Error to initialize GPIO_PIN(%d %d) (aka yellow led)\r\n", PORT_B, 5);
         return -1;
     }
 
-    gpio_t pin_out_g = GPIO_PIN(PORT_B, 3);
+    pin_out_g = GPIO_PIN(PORT_B, 3);
+    // green = GPIO_PIN(PORT_B, 3);
     if (gpio_init(pin_out_g, GPIO_OUT)) {
         printf("[-] Error to initialize GPIO_PIN(%d %d) (aka green led)\r\n", PORT_B, 3);
         return -1;
     }
 
-    printf("[+] Doing some tests with semaphore...\r\n");
-    set_pin(pin_out_r);
-    xtimer_sleep(1);
-    clear_pin(pin_out_r);
-
-    set_pin(pin_out_y);
-    xtimer_sleep(1);
-    clear_pin(pin_out_y);
-
-    set_pin(pin_out_g);
-    xtimer_sleep(1);
-    clear_pin(pin_out_g);
-
-    // xtimer_sleep(2);
-
-    // clear_pin(pin_out_r);
-    // clear_pin(pin_out_y);
-    // clear_pin(pin_out_g);
-
-    xtimer_sleep(2);
-
-    /* init the ADC line */
-    if (adc_init(ADC_IN_USE) < 0) {
-        printf("[-] Initialization of ADC_LINE(%u) failed\n", ADC_IN_USE);
-        return 1;
-    }
-
-#ifndef DEBUG
-    printf("[+] Successfully initialized ADC_LINE(%u)...\r\n", ADC_IN_USE);
-#endif
-
-    ph_value();
-
-    xtimer_sleep(5);
-
-    /* init bmp280 sensor */
-    printf("[+] Initializing bmp280 sensor...\r\n");
+    /* initialize bmp280 */
+    printf("[+] Init bmp280\r\n");
     int res = bmx280_init(&bmp280, bmx280_params);
     
     if (res == BMX280_OK) {
@@ -442,18 +556,13 @@ int main(void) {
         printf("[-] BMP280 device not found!\r\n");
         return (BMX280_ERR_NODEV);
     }
-    else { printf("[X] WTF is going on?\r\n"); }
-
-    setup_mqtt(on_pub);
-
-    printf("[+] Reading bmp280 sensor values...\r\n");
-    bmp280_values();
-
-    xtimer_sleep(3);
-
+    else { 
+        printf("[X] WTF is going on?\r\n"); 
+        return 127;
+    }
+    
     /* initialize to I2C */
     printf("[+] Initializing oled display to I2C...\r\n");
-
     TEST_DISPLAY(&u8g2, U8G2_R0, u8x8_byte_hw_i2c_riotos, u8x8_gpio_and_delay_riotos);
 
     u8x8_riotos_t hydra_data = {
@@ -470,57 +579,68 @@ int main(void) {
     printf("Initializing oled display...\r\n");
 
     u8g2_InitDisplay(&u8g2);
+    u8g2_ClearDisplay(&u8g2);
     u8g2_SetPowerSave(&u8g2, 0);
 
-    /* start drawing in a loop */
-    // printf("Drawing on screen.\r\n");
+    /* Prepare tank components and init the struct */
+    int tank_id = 1;
+    // time_t rawtime;
+    // time(&rawtime);
+    // int timeinfo = localtime(&rawtime);
 
+    // environment_t env = {
+    //     .id = tank_id,
+    //     .bmp280 = bmp280,
+    //     .last_update = 0
+    // };
+
+    // nutrient_solution_t sol = {
+    //     .id = tank_id,
+    //     .ph = 7,
+    //     .last_update = 0
+    // };
+
+    tank_t tnk = {
+        .id = tank_id,
+        .env = { tank_id, &bmp280, 0 },
+        .solution = { tank_id, NEUTRAL_PH, 0 },
+        // .display = u8g2,
+        .state = DEFAULT_STATE,
+        .last_update = 0
+    };
+    memcpy(&tnk.display, &u8g2, sizeof(u8g2_t));
+
+    // memcpy(&hydra_tank, &tnk, sizeof(tank_t));
+    
+    // memcpy(&tnk.env.sensor, &bmp280, sizeof(bmx280_t));
+
+    printf("[+] Doing some tests with semaphore...\r\n");
+    set_pin(pin_out_r);
+    // xtimer_sleep(1);
+    // clear_pin(pin_out_r);
+
+    // set_pin(pin_out_y);
+    // xtimer_sleep(1);
+    // clear_pin(pin_out_y);
+
+    // set_pin(pin_out_g);
+    // xtimer_sleep(1);
+    // clear_pin(pin_out_g);
+
+    setup_mqtt(on_pub);
+
+    /* TODO: handle thread failure? */
     thread_create(bmp280_thread_stack, sizeof(bmp280_thread_stack), THREAD_PRIORITY_MAIN - 1, 0, bmp280_thread, NULL, "bmp280");
     thread_create(sen0161_thread_stack, sizeof(sen0161_thread_stack), THREAD_PRIORITY_MAIN - 1, 0, sen0161_thread, NULL, "sen0161");
-    // thread_create(sh1106_thread_stack, sizeof(sh1106_thread_stack), THREAD_PRIORITY_MAIN - 1, 0, sh1106_thread, (void*) u8g2, "sh1106");
+    thread_create(leds_thread_stack, sizeof(leds_thread_stack), THREAD_PRIORITY_MAIN - 1, 0, leds_thread, NULL, "leds");
 
-    while (1) {
-        printf("First page...\r\n");
-        u8g2_FirstPage(&u8g2);
+    // thread_create(sh1106_thread_stack, sizeof(sh1106_thread_stack), THREAD_PRIORITY_MAIN - 1, 0, sh1106_thread, (void*) &u8g2, "sh1106");
+    // thread_create(hydra_thread_stack, sizeof(hydra_thread_stack), THREAD_PRIORITY_MAIN - 1, 0, hydra_thread, hydra_tank, "hydra_dev");
+    xtimer_sleep(3);
+    thread_create(sh1106_thread_stack, sizeof(sh1106_thread_stack), THREAD_PRIORITY_MAIN - 1, 0, sh1106_thread, (void*) &tnk.display, "sh1106");
 
-        do {
-            printf("Next page...\r\n");
-            printf("Draw color...\r\n");
-            u8g2_SetDrawColor(&u8g2, 1);
-            printf("Set font...\r\n");
-            u8g2_SetFont(&u8g2, u8g2_font_helvB12_tf);
-
-            printf("Before switch...\r\n");
-            switch (screen) {
-                case 0:
-                    printf("Case 0\r\n");
-                    u8g2_DrawStr(&u8g2, 12, 22, "THIS");
-                    break;
-                case 1:
-                    printf("Case 1\r\n");
-                    u8g2_DrawStr(&u8g2, 24, 22, "IS");
-                    break;
-                case 2:
-                    printf("Case 2\r\n");
-                    u8g2_DrawStr(&u8g2, 12, 22, "HYDRA");
-                    break;
-                case 3:
-                    printf("Case 3\r\n");
-                    u8g2_DrawBitmap(&u8g2, 0, 0, 8, 32, riot_logo);
-                    break;
-            }
-            printf("After switch...\r\n");
-        } while (u8g2_NextPage(&u8g2));
-
-        printf("Before show...\r\n");
-
-        /* show screen in next iteration */
-        screen = (screen + 1) % 4;
-
-        /* sleep a little */
-        // ztimer_sleep(ZTIMER_USEC, US_PER_SEC);
-        xtimer_sleep(3);
-    }
+    xtimer_sleep(3);
+    thread_create(hydra_thread_stack, sizeof(hydra_thread_stack), THREAD_PRIORITY_MAIN - 1, 0, hydra_thread, NULL, "hydra_dev");
 
     /* start shell */
     char line_buf[SHELL_DEFAULT_BUFSIZE];
