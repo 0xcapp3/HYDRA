@@ -12,7 +12,7 @@
 #include "bmx280.h"
 #include "bmx280_params.h"
 
-#define MIN_TEMP 20.0
+#define MIN_TEMP 10.0
 #define MAX_TEMP 30.0
 
 uint16_t get_env_raw_temperature(bmx280_t*);

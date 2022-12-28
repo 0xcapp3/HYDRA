@@ -15,8 +15,8 @@
 #define DELAY                       (3LU * US_PER_SEC) /* 3 s */
 
 #define NEUTRAL_PH 7
-#define MIN_PH 6.5
-#define MAX_PH 7.5
+#define MIN_PH 1.5
+#define MAX_PH 13.5
 
 int init_sen0161(void);
 float get_ph_value(void);
