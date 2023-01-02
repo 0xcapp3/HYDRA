@@ -1,33 +1,45 @@
 # HYDRA (HYDRoponic Autonoumus system)
 
 ## Introduction
-This project was born 
+
+Welcome to HYDRA project!
+
+This project is an advanced and fully automated hydroponic system for growing plants in a soilless medium using nutrient-rich water. The system utilizes a range of sensors and actuators to monitor and control the growing environment, ensuring optimal conditions for the plants at all times.
+
+The system includes a pH sensor to measure the acidity or alkalinity of the nutrient solution, a BMP280 sensor to measure temperature and atmospheric pressure, an LED semaphore to signal when conditions are outside of the optimal range, and an OLED display to provide real-time information about the growing environment.
+
+The system is designed to be highly energy efficient and can be easily integrated into a variety of electronic devices and systems. It can be used in a wide range of applications, including home gardening, commercial agriculture, and research.
+
+I hope you find this project useful and we welcome any feedback or suggestions you may have. Thank you for visiting!
 
 ## What is an hydroponic system?
-Hydroponics is a method of growing plants using nutrient-rich water instead of soil. In a hydroponic system, plants are grown in a soilless medium, such as perlite, vermiculite, or coconut coir, and are fed a nutrient-rich solution on a regular basis. This solution typically includes all of the essential minerals and nutrients that plants need to grow and thrive.
+
+As anticipated before, hydroponics is a method of growing plants using nutrient-rich water instead of soil. In a hydroponic system, plants are grown in a soilless medium, such as perlite, vermiculite, or coconut coir, and are fed a nutrient-rich solution on a regular basis. This solution typically includes all of the essential minerals and nutrients that plants need to grow and thrive.
 
 There are many different types of hydroponic systems, including nutrient film technique (NFT), deep water culture (DWC), aeroponics, and drip irrigation. These systems differ in the way that they deliver nutrients and water to the plants, as well as the type of growing medium that is used.
 
 Hydroponic systems can be used to grow a wide variety of plants, including fruits, vegetables, herbs, and flowers. They are often used in greenhouse or indoor growing environments, and can be a more efficient and sustainable way to grow crops, as they use less water and pesticides than traditional soil-based agriculture.
 
-## Components
+## Hardware
 
-A hydroponic system that includes a pH sensor and a BMP280 sensor, as well as an LED semaphore and an OLED display, is a highly advanced and automated system for growing plants in a soilless medium using nutrient-rich water.
+### Board
 
-The pH sensor is used to measure the acidity or alkalinity of the nutrient solution, which is critical for the health and growth of the plants. The sensor works by detecting the concentration of hydrogen ions in the solution and expressing the results on a pH scale. This information is used to adjust the pH of the nutrient solution as needed to maintain optimal growing conditions for the plants.
+- [board](https://www.st.com/en/evaluation-tools/nucleo-f401re.html)
 
-The BMP280 sensor is used to measure the temperature and atmospheric pressure in the growing environment. This information is important for maintaining a suitable climate for the plants, as well as for predicting weather patterns and conditions.
+The Nucleo F401RE development board is a compact, low-cost microcontroller development board that is designed to help engineers and hobbyists build and prototype projects with the STM32F401RE microcontroller. The board is based on the STM32F401RE microcontroller, which is part of the STM32F4 series of high-performance microcontrollers from STMicroelectronics.
 
-The LED semaphore is an actuator that can be used to signal when the pH or temperature in the growing environment is outside of the optimal range for the plants. The semaphore can be programmed to display different colors or patterns, depending on the specific conditions in the system.
+The STM32F401RE microcontroller is a 32-bit ARM Cortex-M4 device that is designed for high-performance applications. It has a clock speed of up to 84 MHz, 512 KB of flash memory, and 96 KB of SRAM. The microcontroller also has a range of peripherals, including 12-bit ADC, DAC, timers, communication interfaces (SPI, I2C, USART), and a USB 2.0 OTG (on-the-go) controller.
 
-The OLED display is used to display real-time information about the pH, temperature, and atmospheric pressure in the growing environment. This information can be used by the grower to make informed decisions about the care and maintenance of the plants.
+The Nucleo F401RE development board has a range of features and connectors to make it easy to use and prototype with the STM32F401RE microcontroller. It has a built-in ST-LINK/V2-1 debugger and programmer, which can be used to program and debug the microcontroller using a PC. The board also has an Arduino Uno V3 connector, which allows it to be used with a range of Arduino-compatible shields and modules.
 
-Overall, this hydroponic system is a highly sophisticated and efficient way to grow plants in a controlled and sustainable manner. The integration of sensors and actuators allows the system to be fully automated and helps to ensure optimal growing conditions for the plants at all times.
+Other features of the Nucleo F401RE development board include an on-board ST-LINK/V2-1 debugger and programmer, a USB connector for power and programming, a user button and LED, and a 32.768 kHz crystal oscillator. The board is also compatible with a range of software development tools, including the STM32CubeIDE and the Arduino Integrated Development Environment (IDE).
+
+Overall, the Nucleo F401RE development board is a versatile and cost-effective platform for building and prototyping projects with the STM32F401RE microcontroller. It is suitable for a wide range of applications, including Internet of Things (IoT) projects, embedded systems, and robotics.
 
 ### Sensors
 #### BMP280
 
-The BMP280 is a small, low-power digital sensor that can measure temperature and pressure. It is commonly used in weather stations, altimeters, and other applications that require accurate measurement of atmospheric pressure and temperature.
+The BMP280 is a small, low-power digital sensor that can measure temperature and pressure. It is commonly used in weather stations, altimeters, cars, and other applications that require accurate measurement of atmospheric pressure and temperature.
 
 The sensor is based on a microelectromechanical system (MEMS) pressure sensor, which uses a small, flexible membrane to measure pressure changes. The membrane is connected to a Wheatstone bridge circuit, which converts the pressure change into an electrical signal. This signal is then processed by the sensor's onboard microcontroller to provide a temperature and pressure reading.
 
@@ -35,7 +47,7 @@ The BMP280 has a temperature measurement range of -40 to 85 degrees Celsius, wit
 
 In addition to its temperature and pressure measurement capabilities, the BMP280 also has a built-in altimeter function, which can calculate the altitude based on the measured pressure. This feature can be useful in applications such as weather stations, where altitude is an important factor in weather prediction.
 
-The BMP280 is available in a compact, surface-mount package, making it easy to integrate into a variety of electronic devices. It operates on a voltage of 1.8 to 3.6 volts and has a low power consumption of only 1.8 microamps in power-down mode. This makes it well-suited for use in battery-powered devices or applications where power consumption is a concern.
+Generally speaking, the BMP280 is available in a compact, surface-mount package, making it easy to integrate into a variety of electronic devices. It operates on a voltage of 1.8 to 3.6 volts and has a low power consumption of only 1.8 microamps in power-down mode. This makes it well-suited for use in battery-powered devices or applications where power consumption is a concern.
 
 [sensor image]
 
@@ -44,14 +56,6 @@ The BMP280 is available in a compact, surface-mount package, making it easy to i
 [add image tech_data_bmp280]
 
 #### SEN0161
-
-pH sensors are devices that are used to measure the acidity or alkalinity of a solution. They work by detecting the concentration of hydrogen ions in a solution and expressing the results on a pH scale, which ranges from 0 to 14. A pH of 7 is neutral, while a pH below 7 is considered acidic and a pH above 7 is considered alkaline.
-
-There are several different types of pH sensors, including glass electrodes, plastic electrodes, and ISFET (ion-sensitive field-effect transistor) sensors. These sensors work by detecting the electrical potential of the hydrogen ions in a solution and converting it into a measurable voltage. The voltage is then processed by the sensor's onboard electronics to provide a pH reading.
-
-pH sensors are commonly used in a wide variety of applications, including water treatment, food and beverage processing, pharmaceutical manufacturing, and environmental monitoring. They are also used in hydroponic systems to monitor the pH of the nutrient solution and ensure optimal growing conditions for plants.
-
----------------------------------
 
 A pH sensor is a device that is used to measure the acidity or alkalinity of a solution. It works by detecting the concentration of hydrogen ions in a solution and expressing the results on a pH scale, which ranges from 0 to 14. A pH of 7 is neutral, while a pH below 7 is considered acidic and a pH above 7 is considered alkaline.
 
@@ -74,9 +78,22 @@ useful stuff:
 
 [semaphore image]
 
+The LED semaphore is an actuator that can be used to signal when the pH or temperature in the growing environment is outside of the optimal range for the plants. The semaphore can be programmed to display different colors or patterns, depending on the specific conditions in the system.
+
 #### Oled display
 
 [oled image]
 
+The OLED display is used to display real-time information about the pH, temperature, and atmospheric pressure in the growing environment. This information can be used by the grower to make informed decisions about the care and maintenance of the plants.
 
+## Software
+ ...
 
+## Network
+ ...
+
+## Data processing
+ ...
+
+## Demo video
+ ...
