@@ -49,6 +49,16 @@ In addition to its temperature and pressure measurement capabilities, the BMP280
 
 Generally speaking, the BMP280 is available in a compact, surface-mount package, making it easy to integrate into a variety of electronic devices. It operates on a voltage of 1.8 to 3.6 volts and has a low power consumption of only 1.8 microamps in power-down mode. This makes it well-suited for use in battery-powered devices or applications where power consumption is a concern.
 
+##### I2C interface
+
+The I2C interface uses the following pins:
+
+
+- SCK: serial clock (SCL)
+- SDI: data (SDA)
+- SDO: the I2C address decides the pin. If SDO connects to GND (0), the address is 0x76, if it connects to VDDIO (1), the address is 0x77. In this module, we have connected  it to VDDIO, so the address should be 0x77.
+- CSB: Must be connected to VDDIO to select I2C interface 
+
 [sensor image]
 
 ...
