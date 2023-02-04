@@ -31,6 +31,10 @@
 #error "TEST_PIN_RESET not defined"
 #endif
 
+#ifndef DEBUG
+#error "No debug option given"
+#endif
+
 gpio_t pin_out_r, pin_out_y, pin_out_g;
 
 bmx280_t bmp280;
@@ -63,7 +67,10 @@ void on_pub(const emcute_topic_t *topic, void *data, size_t len) {
 }
 
 void send(char* temp, char* pres, char* ph) {
-    printf("VALUES: temp: %f | pres: %f | pH: %f\r\n", atof(temp), atof(pres), atof(ph));
+
+#ifndef DEBUG
+    printf("[send] VALUES: temp: %f | pres: %f | pH: %f\r\n", atof(temp), atof(pres), atof(ph));
+#endif
 
     // const char* msg_struct = "{\"cluster_id\":\"%d\",\"device_id\":\"%s\",\"temperature\":\"%f\",\"pressure\":\"%f\",\"ph\":\"%f\"}";
     // const char* msg_struct  = "{ cluster_id: %d, device_id: %s, temperature: %f, pressure: %f, ph: %f }";
@@ -72,7 +79,7 @@ void send(char* temp, char* pres, char* ph) {
     /* TODO: check malloc return value*/
 
     snprintf(msg, length + 1, "{\"cluster_id\":\"%d\",\"device_id\":\"%s\",\"temperature\":\"%s\",\"pressure\":\"%s\",\"ph\":\"%s\"}", 1, EMCUTE_ID, temp, pres, ph);
-    printf("[=] MQTT_TOPIC_OUT: %s\r\n", MQTT_TOPIC_OUT);
+    printf("[send] MQTT_TOPIC_OUT: %s\r\n", MQTT_TOPIC_OUT);
     mqtt_pub(MQTT_TOPIC_OUT, msg, 0);
 
     free(msg);
@@ -83,7 +90,8 @@ state_e get_status(uint16_t temperature, uint32_t pressure, float pH) {
     int cnt = 0;
     float tmp_temp = temperature / 100;
     float tmp_pres = pressure / 10000;
-    printf("[+] %f | %f\r\n", tmp_temp, tmp_pres);
+
+    // printf("[+] Temperature: %.2f | Pressure: %.2f\r\n", tmp_temp, tmp_pres);
     int temp_error = (tmp_temp >= MIN_TEMP && tmp_temp <= MAX_TEMP) ? 0 : 1;
     printf("[+] temp error: %d\r\n", temp_error);
 
@@ -129,50 +137,77 @@ static void* leds_thread(void *arg) {
     while (1) {
         if (global_state == OK) {
 
-            if (gpio_read(pin_out_g) != 0) {
-                continue;
-            }
-            else if (gpio_read(pin_out_y) != 0) {
-                clear_pin(pin_out_g);
+            clear_pin(pin_out_g);
+            clear_pin(pin_out_y);
+            clear_pin(pin_out_r);
 
-                set_pin(pin_out_y);
-            }
-            else {
-                clear_pin(pin_out_g);
+            set_pin(pin_out_g);
 
-                set_pin(pin_out_r);
-            }
+            // printf("[leds] turn up green led");
+
+
+
+            // if (gpio_read(pin_out_g) != 0) {
+            //     continue;
+            // }
+            // else if (gpio_read(pin_out_y) != 0) {
+            //     clear_pin(pin_out_g);
+
+            //     set_pin(pin_out_y);
+            // }
+            // else {
+            //     clear_pin(pin_out_g);
+
+            //     set_pin(pin_out_r);
+            // }
         }
         else if (global_state == SOMETHING_WRONG) {
 
-            if (gpio_read(pin_out_y) != 0) {
-                continue;
-            }
-            else if (gpio_read(pin_out_g) != 0) {
-                clear_pin(pin_out_y);
+            clear_pin(pin_out_g);
+            clear_pin(pin_out_y);
+            clear_pin(pin_out_r);
 
-                set_pin(pin_out_g);
-            }
-            else {
-                clear_pin(pin_out_y);
+            set_pin(pin_out_y);
 
-                set_pin(pin_out_r);
-            }
+            // printf("[leds] turn up yellow led");
+
+            // if (gpio_read(pin_out_y) != 0) {
+            //     continue;
+            // }
+            // else if (gpio_read(pin_out_g) != 0) {
+            //     clear_pin(pin_out_y);
+
+            //     set_pin(pin_out_g);
+            // }
+            // else {
+            //     clear_pin(pin_out_y);
+
+            //     set_pin(pin_out_r);
+            // }
         }
         else {
-           if (gpio_read(pin_out_r) != 0) {
-                continue;
-            }
-            else if (gpio_read(pin_out_y) != 0) {
-                clear_pin(pin_out_r);
 
-                set_pin(pin_out_y);
-            }
-            else {
-                clear_pin(pin_out_r);
+            clear_pin(pin_out_g);
+            clear_pin(pin_out_y);
+            clear_pin(pin_out_r);
 
-                set_pin(pin_out_g);
-            }
+            set_pin(pin_out_r);
+
+            // printf("[leds] turn up red led");
+
+        //    if (gpio_read(pin_out_r) != 0) {
+        //         continue;
+        //     }
+        //     else if (gpio_read(pin_out_y) != 0) {
+        //         clear_pin(pin_out_r);
+
+        //         set_pin(pin_out_y);
+        //     }
+        //     else {
+        //         clear_pin(pin_out_r);
+
+        //         set_pin(pin_out_g);
+        //     }
         }
 
         xtimer_sleep(3);
@@ -248,11 +283,17 @@ static void *sh1106_thread(void *u8g2) {
 
                     // temperature = get_env_raw_temperature(&bmp280);
                     tmp_string = str_temperature(global_temperature);
-                    printf("[+] Temperature string: %s\r\n", tmp_string);
+
+#ifndef DEBUG
+                    printf("[loop] %s\r\n", tmp_string);
+#endif
 
                     // pressure = get_env_raw_pressure(&bmp280);
                     pres_string = str_pressure(global_pressure);
-                    printf("[+] Pressure string: %s\r\n", pres_string);
+
+#ifndef DEBUG
+                    printf("[loop] %s\r\n", pres_string);
+#endif
 
                     // printf("Case 2\r\n");
                     u8g2_DrawStr(u8g2, 6, 12, tmp_string);
@@ -265,7 +306,10 @@ static void *sh1106_thread(void *u8g2) {
                     // printf("Case 2\r\n");
                     // ph = get_ph_value();
                     ph_string = str_pH(global_ph);
-                    printf("[+] pH string: %s\r\n", ph_string);
+
+#ifndef DEBUG
+                    printf("[loop] %s\r\n", ph_string);
+#endif
 
                     u8g2_DrawStr(u8g2, 6, 12, ph_string);
 
@@ -356,7 +400,7 @@ static void *sen0161_thread(void *arg) {
             printf("ADC_LINE(%u): selected resolution not applicable\r\n", ADC_IN_USE);
         }
 
-#ifdef DEBUG
+#ifndef DEBUG
         printf("ADC_LINE(%u): raw value: %i, ph: %f\r\n", ADC_IN_USE, sample, ph);
 #endif
 
@@ -389,14 +433,29 @@ static void *bmp280_thread(void *arg) {
         }
         else {
 
+#ifdef DEBUG
             printf("[=] Temperature: %i.%u C\r\n", (temp/100), (temp%100));
+#endif
 
             uint32_t pres = 0;
             pres = bmx280_read_pressure(&bmp280);
 
+#ifdef DEBUG
             printf("[=] Pressure: %li.%lu kPa\r\n", (pres/1000), (pres%1000));
             printf("[=] Pressure: %li.%lu bar\r\n", (pres/100000), (pres%100000));
+#endif
             
+
+            // The altitude in meters can be calculated with the international barometric formula:
+            //
+            // H = 44330 * [1 - (P/p0)^(1/5.255) ]
+            //
+            // where
+            //
+            // H = altitude (m)
+            // P = measured pressure (Pa) from the sensor
+            // p0 = reference pressure at sea level (e.g. 1013.25hPa)
+
             // H = 44330 * [ 1 - (P / p0) ^ (1 / 5,255) ]
             float pres0 = 1013.25;
             float base = (pres / pres0);
@@ -428,7 +487,11 @@ static int bmp280_handler(int argc, char *argv[]) {
     if (!strcmp(argv[1],"temperature")) {
         int16_t temp = 0;
         temp = bmx280_read_temperature(&bmp280);
+
+#ifdef DEBUG
         printf("[=] Temperature: %i.%u C\r\n",(temp/100),(temp%100));
+#endif
+
     }
     else if (!strncmp(argv[1],"pressure", strlen("pressure"))) { 
         bmx280_read_temperature(&bmp280);
@@ -453,8 +516,10 @@ static int bmp280_handler(int argc, char *argv[]) {
         uint32_t pres = 0;
         pres = bmx280_read_pressure(&bmp280);
 
+#ifdef DEBUG
         printf("[=] Pressure: %li.%lu kPa\r\n", (pres/1000), (pres%1000));
         printf("[=] Pressure: %li.%lu bar\r\n", (pres/100000), (pres%100000));
+#endif
         
         // H = 44330 * [ 1 - (P / p0) ^ (1 / 5,255) ]
         // float pres0 = 1013.25;
@@ -520,10 +585,10 @@ int main(void) {
     init_sen0161();
 
     printf("[+] Init pins' leds\r\n");
-    pin_out_r = GPIO_PIN(PORT_B, 4);
+    pin_out_r = GPIO_PIN(PORT_B, 3);
     // red = GPIO_PIN(PORT_B, 4);
     if (gpio_init(pin_out_r, GPIO_OUT)) {
-        printf("[-] Error to initialize GPIO_PIN(%d %d) (aka red led)\r\n", PORT_B, 4);
+        printf("[-] Error to initialize GPIO_PIN(%d %d) (aka red led)\r\n", PORT_B, 3);
         return -1;
     }
 
@@ -534,10 +599,10 @@ int main(void) {
         return -1;
     }
 
-    pin_out_g = GPIO_PIN(PORT_B, 3);
+    pin_out_g = GPIO_PIN(PORT_B, 4);
     // green = GPIO_PIN(PORT_B, 3);
     if (gpio_init(pin_out_g, GPIO_OUT)) {
-        printf("[-] Error to initialize GPIO_PIN(%d %d) (aka green led)\r\n", PORT_B, 3);
+        printf("[-] Error to initialize GPIO_PIN(%d %d) (aka green led)\r\n", PORT_B, 4);
         return -1;
     }
 
@@ -611,11 +676,10 @@ int main(void) {
     memcpy(&tnk.display, &u8g2, sizeof(u8g2_t));
 
     // memcpy(&hydra_tank, &tnk, sizeof(tank_t));
-    
     // memcpy(&tnk.env.sensor, &bmp280, sizeof(bmx280_t));
 
-    printf("[+] Doing some tests with semaphore...\r\n");
-    set_pin(pin_out_r);
+    // printf("[+] Doing some tests with semaphore...\r\n");
+    // set_pin(pin_out_r);
     // xtimer_sleep(1);
     // clear_pin(pin_out_r);
 

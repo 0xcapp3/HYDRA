@@ -35,7 +35,7 @@ float get_ph_value(void) {
     }
 
 #ifdef DEBUG
-    printf("Sampled bit (raw sample) from pin A0: %d\n", sample);
+    printf("Sampled bit (raw sample) from pin A00: %d\n", sample);
 #endif
 
     mapped_voltage = sample * (5.0 / pow(2, 12));
@@ -51,7 +51,7 @@ float get_ph_value(void) {
 #endif
 
     if (sample < 0) {
-        printf("ADC_LINE(%u): selected resolution not applicable\r\n", ADC_IN_USE);
+        printf("ADC_LINE(%u): selected resolution not applicable\r\n", ADC_IN_USE); // FIXME: maybe handle this case gracefully
     }
 
 #ifdef DEBUG

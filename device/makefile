@@ -25,6 +25,7 @@ USEMODULE += stdio_ethos gnrc_uhcpc
 # TODO: check if it print pH float value
 USEMODULE += printf_float
 
+CLUSTER_ID ?= hydra_cluster
 EMCUTE_ID ?= hydra_dev0
 ETHOS_BAUDRATE ?= 115200
 TAP ?= tap0

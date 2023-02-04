@@ -17,7 +17,7 @@ int init_oled_display(u8g2_t u8g2) {
     u8g2_SetI2CAddress(&u8g2, TEST_ADDR);
 
     /* initialize the display */
-    printf("Initializing oled display...\r\n");
+    printf("Initializing oled display for HYDRA...\r\n");
 
     u8g2_InitDisplay(&u8g2);
     u8g2_SetPowerSave(&u8g2, 0);
