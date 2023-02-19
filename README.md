@@ -1,4 +1,4 @@
-# HYDRA (HYDRoponic Autonoumus system)
+# HYDRA (HYDRoponic Autonoumus monitoring system)
 
 ## Introduction
 
@@ -53,7 +53,6 @@ Generally speaking, the BMP280 is available in a compact, surface-mount package,
 
 The I2C interface uses the following pins:
 
-
 - SCK: serial clock (SCL)
 - SDI: data (SDA)
 - SDO: the I2C address decides the pin. If SDO connects to GND (0), the address is 0x76, if it connects to VDDIO (1), the address is 0x77. In this module, we have connected  it to VDDIO, so the address should be 0x77.
@@ -88,7 +87,7 @@ useful stuff:
 
 [semaphore image]
 
-The LED semaphore is an actuator that can be used to signal when the pH or temperature in the growing environment is outside of the optimal range for the plants. The semaphore can be programmed to display different colors or patterns, depending on the specific conditions in the system.
+The LED semaphore is an actuator that can be used to signal when the pH, temperature or pressure in the growing environment is outside of the optimal range for the plants. The semaphore can be programmed to display different colors or patterns, depending on the specific conditions in the system.
 
 #### Oled display
 
