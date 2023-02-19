@@ -24,6 +24,8 @@ Hydroponic systems can be used to grow a wide variety of plants, including fruit
 
 ### Board
 
+[board image]
+
 - [board](https://www.st.com/en/evaluation-tools/nucleo-f401re.html)
 
 The Nucleo F401RE development board is a compact, low-cost microcontroller development board that is designed to help engineers and hobbyists build and prototype projects with the STM32F401RE microcontroller. The board is based on the STM32F401RE microcontroller, which is part of the STM32F4 series of high-performance microcontrollers from STMicroelectronics.
@@ -38,6 +40,8 @@ Overall, the Nucleo F401RE development board is a versatile and cost-effective p
 
 ### Sensors
 #### BMP280
+
+[sensor image]
 
 The BMP280 is a small, low-power digital sensor that can measure temperature and pressure. It is commonly used in weather stations, altimeters, cars, and other applications that require accurate measurement of atmospheric pressure and temperature.
 
@@ -58,21 +62,19 @@ The I2C interface uses the following pins:
 - SDO: the I2C address decides the pin. If SDO connects to GND (0), the address is 0x76, if it connects to VDDIO (1), the address is 0x77. In this module, we have connected  it to VDDIO, so the address should be 0x77.
 - CSB: Must be connected to VDDIO to select I2C interface 
 
-[sensor image]
-
 ...
 
 [add image tech_data_bmp280]
 
 #### SEN0161
 
+[sensor image]
+
 A pH sensor is a device that is used to measure the acidity or alkalinity of a solution. It works by detecting the concentration of hydrogen ions in a solution and expressing the results on a pH scale, which ranges from 0 to 14. A pH of 7 is neutral, while a pH below 7 is considered acidic and a pH above 7 is considered alkaline.
 
 There are several different types of pH sensors, including glass electrodes, plastic electrodes, and ISFET (ion-sensitive field-effect transistor) sensors. These sensors work by detecting the electrical potential of the hydrogen ions in a solution and converting it into a measurable voltage. The voltage is then processed by the sensor's onboard electronics to provide a pH reading.
 
 pH sensors are commonly used in a wide variety of applications, including water treatment, food and beverage processing, pharmaceutical manufacturing, and environmental monitoring. They are also used in hydroponic systems to monitor the pH of the nutrient solution and ensure optimal growing conditions for plants.
-
-[sensor image]
 
 ...
 
