@@ -2,13 +2,11 @@
 
 *Individual project for the IoT course 2022 at La Sapienza University of Rome*
 
-The project was born from the need ... . To solve that problem ... .
-
 ## Introduction
 
 Welcome to HYDRA project!
 
-This project is an advanced and fully automated hydroponic system for growing plants in a soilless medium using nutrient-rich water. The system utilizes a range of sensors and actuators to monitor and control the growing environment, ensuring optimal conditions for the plants at all times.
+This project is an advanced and fully automated hydroponic monitoring system for growing plants in a soilless medium using nutrient-rich water. The system utilizes a range of sensors and actuators to monitor and control the growing environment, ensuring optimal conditions for the plants at all times.
 
 The system includes a pH sensor to measure the acidity or alkalinity of the nutrient solution, a BMP280 sensor to measure temperature and atmospheric pressure, an LED semaphore to signal when conditions are outside of the optimal range, and an OLED display to provide real-time information about the growing environment.
 
