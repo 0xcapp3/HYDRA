@@ -1,10 +1,12 @@
 # HYDRA (HYDRoponic Autonoumus monitoring system)
 
+*Individual project for the IoT course 2022 at La Sapienza University of Rome*
+
+The project was born from the need ... . To solve that problem ... .
+
 ## Introduction
 
 Welcome to HYDRA project!
-
-[hydra video/gif]
 
 This project is an advanced and fully automated hydroponic system for growing plants in a soilless medium using nutrient-rich water. The system utilizes a range of sensors and actuators to monitor and control the growing environment, ensuring optimal conditions for the plants at all times.
 
@@ -21,6 +23,20 @@ As anticipated before, hydroponics is a method of growing plants using nutrient-
 There are many different types of hydroponic systems, including nutrient film technique (NFT), deep water culture (DWC), aeroponics, and drip irrigation. These systems differ in the way that they deliver nutrients and water to the plants, as well as the type of growing medium that is used.
 
 Hydroponic systems can be used to grow a wide variety of plants, including fruits, vegetables, herbs, and flowers. They are often used in greenhouse or indoor growing environments, and can be a more efficient and sustainable way to grow crops, as they use less water and pesticides than traditional soil-based agriculture.
+
+## Architecture 
+
+The IoT device is developed using RIOT-OS and a STM NUCLEO-f401re board. The cloud-based services are based on the AWS ecosystem. The system includes two sensors and two actuators. All hardware components will be examined in depth in the specific section.
+
+The board is connected through MQTT-SN to a broker hosted on the machine the board is connected to. The connection is carried out using IPv6 and RIOT-OS tap interfaces. The board publishes on “topic_out” and subscribes to “topic_in” to receive messages from outside.
+
+A transparent bridge written in python is used to forward messages to and from AWS IoTCore. It runs on the machine the board is connected to. It reads messages from the local broker with “topic_out” and publishes them to AWS IoTCore on the same topic. It also reads messages from AWS IoTCore with “topic_in” and publishes them on the local broker with the same topic.
+
+Once data arrives to AWS IoTCore the computation proceeds on the AWS cloud using the following services: DynamoDB, Lambda, API Gateway, Amplify.
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/29161223/220335213-afa49440-1521-4cd2-8cd1-0b1de67a65fc.png" width="75%"></img>
+</p>
 
 ## Hardware
 
@@ -60,7 +76,7 @@ The I2C interface uses the following pins:
 
 - SCK: serial clock (SCL)
 - SDI: data (SDA)
-- SDO: the I2C address decides the pin. If SDO connects to GND (0), the address is 0x76, if it connects to VDDIO (1), the address is 0x77. In this module, we have connected  it to VDDIO, so the address should be 0x77.
+- SDO: the I2C address decides the pin. If SDO connects to GND (0), the address is 0x76, if it connects to VDDIO (1), the address is 0x77. In this module, we have connected it to VDDIO, so the address should be 0x77.
 - CSB: Must be connected to VDDIO to select I2C interface 
 
 ...
@@ -87,19 +103,33 @@ useful stuff:
 
 ### Semaphore
 
-<img src="https://user-images.githubusercontent.com/29161223/220322270-7758ffcf-c7bb-471a-ba75-7d19e4b60a81.jpg" width="35%"></img>
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/29161223/220322270-7758ffcf-c7bb-471a-ba75-7d19e4b60a81.jpg" width="35%"></img>
+</p>
 
 The LED semaphore is an actuator that can be used to signal when the pH, temperature or pressure in the growing environment is outside of the optimal range for the plants. The semaphore can be programmed to display different colors or patterns, depending on the specific conditions in the system.
 
 ### Oled display
 
-<img src="https://user-images.githubusercontent.com/29161223/220323008-dfbad0b8-dd4d-464a-97da-e4811ee15c3a.jpg" width="35%"></img>
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/29161223/220323008-dfbad0b8-dd4d-464a-97da-e4811ee15c3a.jpg" width="35%"></img>
+</p>
 
 The OLED display is used to display real-time information about the pH, temperature, and atmospheric pressure in the growing environment. This information can be used by the grower to make informed decisions about the care and maintenance of the plants.
 
-#### u8g2 library
+#### U8g2 library
 
-...
+U8g2 is a monochrome graphics library for embedded devices ... .
+
+## Network
+
+[...]
+
+In the network there will be transmitted ... coming from the board and the dispense message going to the board. These messages are small, so even a narrow band will be suitable for our use.
+
+Latencies are short enough to not affect the usability of the system and are compliant with the objectives set before the development.
+
+Data is transmitted every `n` seconds. Clearly there will be overhead due to headers necessary to transmit the messages. MQTT-SN was chosen as the protocol to transmit messages because of its characteristics suitable for IoT applications, in particular for its small overhead.
 
 ## How to run
 
