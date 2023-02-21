@@ -125,7 +125,7 @@ U8g2 is a monochrome graphics library for embedded devices ... .
 
 [...]
 
-In the network there will be transmitted ... coming from the board and the dispense message going to the board. These messages are small, so even a narrow band will be suitable for our use.
+In the network there will be transmitted different data (i.e. temperature, pH and pressure) coming from the board and the dispense message going to the board. These messages are small, so even a narrow band will be suitable for our use.
 
 Latencies are short enough to not affect the usability of the system and are compliant with the objectives set before the development.
 
