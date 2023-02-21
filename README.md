@@ -48,7 +48,7 @@ The STM32F401RE microcontroller is a 32-bit ARM Cortex-M4 device that is designe
 
 The Nucleo F401RE development board has a range of features and connectors to make it easy to use and prototype with the STM32F401RE microcontroller. It has a built-in ST-LINK/V2-1 debugger and programmer, which can be used to program and debug the microcontroller using a PC. The board also has an Arduino Uno V3 connector, which allows it to be used with a range of Arduino-compatible shields and modules.
 
-Other features of the Nucleo F401RE development board include an on-board ST-LINK/V2-1 debugger and programmer, a USB connector for power and programming, a user button and LED, and a 32.768 kHz crystal oscillator. The board is also compatible with a range of software development tools, including the STM32CubeIDE and the Arduino Integrated Development Environment (IDE).
+Other features of the Nucleo F401RE development board include an on-board ST-LINK/V2-1 debugger and programmer, a USB connector for power and programming, a user button and LED, and a 32.768 kHz crystal oscillator.
 
 Overall, the Nucleo F401RE development board is a versatile and cost-effective platform for building and prototyping projects with the STM32F401RE microcontroller. It is suitable for a wide range of applications, including Internet of Things (IoT) projects, embedded systems, and robotics.
 
