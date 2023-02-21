@@ -42,6 +42,10 @@ Once data arrives to AWS IoTCore the computation proceeds on the AWS cloud using
 
 ### Board
 
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/29161223/220341295-4504e293-1767-4fa7-8227-9320024d24c6.jpeg" width="45%"></img>
+</p>
+
 The [Nucleo F401RE development board](https://www.st.com/en/evaluation-tools/nucleo-f401re.html) is a compact, low-cost microcontroller development board that is designed to help engineers and hobbyists build and prototype projects with the STM32F401RE microcontroller. The board is based on the STM32F401RE microcontroller, which is part of the STM32F4 series of high-performance microcontrollers from STMicroelectronics.
 
 The STM32F401RE microcontroller is a 32-bit ARM Cortex-M4 device that is designed for high-performance applications. It has a clock speed of up to 84 MHz, 512 KB of flash memory, and 96 KB of SRAM. The microcontroller also has a range of peripherals, including 12-bit ADC, DAC, timers, communication interfaces (SPI, I2C, USART), and a USB 2.0 OTG (on-the-go) controller.
