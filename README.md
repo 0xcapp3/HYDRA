@@ -40,8 +40,7 @@ Other features of the Nucleo F401RE development board include an on-board ST-LIN
 
 Overall, the Nucleo F401RE development board is a versatile and cost-effective platform for building and prototyping projects with the STM32F401RE microcontroller. It is suitable for a wide range of applications, including Internet of Things (IoT) projects, embedded systems, and robotics.
 
-### Sensors
-#### BMP280
+### BMP280
 
 [sensor image]
 
@@ -55,7 +54,7 @@ In addition to its temperature and pressure measurement capabilities, the BMP280
 
 Generally speaking, the BMP280 is available in a compact, surface-mount package, making it easy to integrate into a variety of electronic devices. It operates on a voltage of 1.8 to 3.6 volts and has a low power consumption of only 1.8 microamps in power-down mode. This makes it well-suited for use in battery-powered devices or applications where power consumption is a concern.
 
-##### I2C interface
+#### I2C interface
 
 The I2C interface uses the following pins:
 
@@ -68,7 +67,7 @@ The I2C interface uses the following pins:
 
 [add image tech_data_bmp280]
 
-#### SEN0161
+### pH Sensor
 
 [sensor image]
 
@@ -86,20 +85,21 @@ useful stuff:
     - [dfrobot](https://wiki.dfrobot.com/PH_meter_SKU__SEN0161_)
     - 
 
-### Actuators
-#### Semaphore
+### Semaphore
 
-[semaphore image]
+<img src="https://user-images.githubusercontent.com/29161223/220322270-7758ffcf-c7bb-471a-ba75-7d19e4b60a81.jpg" width="35%"></img>
 
 The LED semaphore is an actuator that can be used to signal when the pH, temperature or pressure in the growing environment is outside of the optimal range for the plants. The semaphore can be programmed to display different colors or patterns, depending on the specific conditions in the system.
 
-#### Oled display
+### Oled display
 
-[oled image]
+<img src="https://user-images.githubusercontent.com/29161223/220323008-dfbad0b8-dd4d-464a-97da-e4811ee15c3a.jpg" width="35%"></img>
 
 The OLED display is used to display real-time information about the pH, temperature, and atmospheric pressure in the growing environment. This information can be used by the grower to make informed decisions about the care and maintenance of the plants.
 
-##### u8g2 library
+#### u8g2 library
+
+...
 
 ## How to run
 
@@ -110,13 +110,15 @@ You first need to add your AWS certificates in the `bridge/` folder, the followi
 - `bridge/<name>.private.key`
 - `bridge/<name>.cert.pem`
 
+Moreover be sure to have `pipenv` installed.
+
 ### Startup scripts
 
-To start HYDRA both `flash_run.sh` and `term_run.sh` scripts are provided. The first will flash the firmware and then execute it whereas the second one ... .
+To start HYDRA both `flash_run.sh` and `term_run.sh` scripts are provided. The first will flash the firmware and then execute it whereas the second one will only start the device. Both will initialize the EthOS serial connection.
 
+Along that it is necessary to start mosquitto with the following command inside its folder: `./broker_mqtts conf.conf` (?).
 
-
-It requires `tmux` to be installed, and the device to be connected via usb. When run, the script will start mosquitto, the MQTT transparent bridge, the EthOS serial connection and the webserver.
+At last, but not least, for the MQTT transparent bridge we need to create a python virtual environemt using `pipenv` and the dedicated `Pipfile`. At first go inside bridge folder and run `pipenv shell`, then `pipenv install`. Once we have our environment ready we can run it with the following command: `python3 transparent_bridge.py`.
 
 ## Demo video
 
