@@ -4,6 +4,8 @@
 
 Welcome to HYDRA project!
 
+[hydra video/gif]
+
 This project is an advanced and fully automated hydroponic system for growing plants in a soilless medium using nutrient-rich water. The system utilizes a range of sensors and actuators to monitor and control the growing environment, ensuring optimal conditions for the plants at all times.
 
 The system includes a pH sensor to measure the acidity or alkalinity of the nutrient solution, a BMP280 sensor to measure temperature and atmospheric pressure, an LED semaphore to signal when conditions are outside of the optimal range, and an OLED display to provide real-time information about the growing environment.
@@ -97,14 +99,25 @@ The LED semaphore is an actuator that can be used to signal when the pH, tempera
 
 The OLED display is used to display real-time information about the pH, temperature, and atmospheric pressure in the growing environment. This information can be used by the grower to make informed decisions about the care and maintenance of the plants.
 
-## Software
- ...
+##### u8g2 library
 
-## Network
- ...
+## How to run
 
-## Data processing
- ...
+### Setup
+
+You first need to add your AWS certificates in the `bridge/` folder, the following are needed:
+- `bridge/root-CA.crt`
+- `bridge/<name>.private.key`
+- `bridge/<name>.cert.pem`
+
+### Startup scripts
+
+To start HYDRA both `flash_run.sh` and `term_run.sh` scripts are provided. The first will flash the firmware and then execute it whereas the second one ... .
+
+
+
+It requires `tmux` to be installed, and the device to be connected via usb. When run, the script will start mosquitto, the MQTT transparent bridge, the EthOS serial connection and the webserver.
 
 ## Demo video
- ...
+
+A video presentation and demo of the project can be found [here](...)
