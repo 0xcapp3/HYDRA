@@ -58,7 +58,9 @@ Overall, the Nucleo F401RE development board is a versatile and cost-effective p
 
 ### BMP280
 
-[sensor image]
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/29161223/220339968-0b16c6e6-f367-4c37-8be3-92db3ef12f5b.jpeg" width="45%"></img>
+</p>
 
 The BMP280 is a small, low-power digital sensor that can measure temperature and pressure. It is commonly used in weather stations, altimeters, cars, and other applications that require accurate measurement of atmospheric pressure and temperature.
 
@@ -74,18 +76,24 @@ Generally speaking, the BMP280 is available in a compact, surface-mount package,
 
 The I2C interface uses the following pins:
 
-- SCK: serial clock (SCL)
-- SDI: data (SDA)
-- SDO: the I2C address decides the pin. If SDO connects to GND (0), the address is 0x76, if it connects to VDDIO (1), the address is 0x77. In this module, we have connected it to VDDIO, so the address should be 0x77.
-- CSB: Must be connected to VDDIO to select I2C interface 
+- **SCK**: serial clock (SCL)
 
-...
+- **SDI**: data (SDA)
 
-[add image tech_data_bmp280]
+- **SDO**: the I2C address decides the pin. If SDO connects to GND (0), the address is 0x76, if it connects to VDDIO (1), the address is 0x77. In this module, we have connected it to VDDIO, so the address should be 0x77.
+
+- **CSB**: Must be connected to VDDIO to select I2C interface
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/29161223/220340205-9d057c5b-aa1f-4bec-9021-a9b58046bad3.jpeg" width="55%"></img>
+</p>
+
 
 ### pH Sensor
 
-[sensor image]
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/29161223/220337549-eed767c6-2964-445a-b887-6397c32dfe24.jpeg" width="45%"></img>
+</p>
 
 A pH sensor is a device that is used to measure the acidity or alkalinity of a solution. It works by detecting the concentration of hydrogen ions in a solution and expressing the results on a pH scale, which ranges from 0 to 14. A pH of 7 is neutral, while a pH below 7 is considered acidic and a pH above 7 is considered alkaline.
 
@@ -93,13 +101,21 @@ There are several different types of pH sensors, including glass electrodes, pla
 
 pH sensors are commonly used in a wide variety of applications, including water treatment, food and beverage processing, pharmaceutical manufacturing, and environmental monitoring. They are also used in hydroponic systems to monitor the pH of the nutrient solution and ensure optimal growing conditions for plants.
 
-...
+### Specifications
 
-[technical data]
+- Module Power : 5.00V
+- Module Size : 43mm×32mm
+- Measuring Range:0-14PH
+- Measuring Temperature :0-60 ℃
+- Accuracy : ± 0.1pH (25 ℃)
+- Response Time : ≤ 1min
+- pH Sensor with BNC Connector
+- PH2.0 Interface ( 3 foot patch )
+- Gain Adjustment Potentiometer
+- Power Indicator LED
 
-useful stuff:
-    - [dfrobot](https://wiki.dfrobot.com/PH_meter_SKU__SEN0161_)
-    - 
+### Useful links
+  - [dfrobot](https://wiki.dfrobot.com/PH_meter_SKU__SEN0161_)
 
 ### Semaphore
 
@@ -123,16 +139,13 @@ U8g2 is a monochrome graphics library for embedded devices ... .
 
 ## Network
 
-[...]
-
 In the network there will be transmitted different data (i.e. temperature, pH and pressure) coming from the board and the dispense message going to the board. These messages are small, so even a narrow band will be suitable for our use.
 
 Latencies are short enough to not affect the usability of the system and are compliant with the objectives set before the development.
 
-Data is transmitted every `n` seconds. Clearly there will be overhead due to headers necessary to transmit the messages. MQTT-SN was chosen as the protocol to transmit messages because of its characteristics suitable for IoT applications, in particular for its small overhead.
+Data is transmitted every `n` seconds depending on needs. Clearly there will be overhead due to headers necessary to transmit the messages. MQTT-SN was chosen as the protocol to transmit messages because of its characteristics suitable for IoT applications, in particular for its small overhead.
 
 ## How to run
-
 ### Setup
 
 You first need to add your AWS certificates in the `bridge/` folder, the following are needed:
