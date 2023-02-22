@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Hydra UI">
+  <meta name="author" content="Alessio Cappellini">
+  <title>Hydra UI</title>
+
+  <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/dashboard/">
+
+
+
+
+
+  <link href="bootstrap-5.3.0-alpha1-dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
+
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+      }
+    }
+
+    .b-example-divider {
+      height: 3rem;
+      background-color: rgba(0, 0, 0, .1);
+      border: solid rgba(0, 0, 0, .15);
+      border-width: 1px 0;
+      box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+    }
+
+    .b-example-vr {
+      flex-shrink: 0;
+      width: 1.5rem;
+      height: 100vh;
+    }
+
+    .bi {
+      vertical-align: -.125em;
+      fill: currentColor;
+    }
+
+    .nav-scroller {
+      position: relative;
+      z-index: 2;
+      height: 2.75rem;
+      overflow-y: hidden;
+    }
+
+    .nav-scroller .nav {
+      display: flex;
+      flex-wrap: nowrap;
+      padding-bottom: 1rem;
+      margin-top: -1px;
+      overflow-x: auto;
+      text-align: center;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+    }
+  </style>
+
+
+  <!-- Custom styles for this template -->
+  <link href="css/dashboard.css" rel="stylesheet">
+</head>
+
+<body>
+
+  <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">Hydra UI</a>
+    <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse"
+      data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  </header>
+
+  <div class="container-fluid">
+    <div class="row">
+      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+        <div class="position-sticky pt-3 sidebar-sticky">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#">
+                <span data-feather="home" class="align-text-bottom"></span>
+                Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#tankSection">
+                <span data-feather="archive" class="align-text-bottom"></span>
+                Tank
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#chartSection">
+                <span data-feather="bar-chart-2" class="align-text-bottom"></span>
+                Charts
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">
+                <span data-feather="radio" class="align-text-bottom"></span>
+                Sensors
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">
+                <span data-feather="file" class="align-text-bottom"></span>
+                Reports
+              </a>
+            </li>
+          </ul>
+
+          <h6
+            class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+            <span>Saved reports</span>
+            <a class="link-secondary" href="#" aria-label="Add a new report">
+              <span data-feather="plus-circle" class="align-text-bottom"></span>
+            </a>
+          </h6>
+          <ul class="nav flex-column mb-2">
+            <li class="nav-item">
+              <a class="nav-link" href="#">
+                <span data-feather="file-text" class="align-text-bottom"></span>
+                Current day
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">
+                <span data-feather="file-text" class="align-text-bottom"></span>
+                Current week
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">
+                <span data-feather="file-text" class="align-text-bottom"></span>
+                Current month
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">
+                <span data-feather="file-text" class="align-text-bottom"></span>
+                Last quarter
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">
+                <span data-feather="file-text" class="align-text-bottom"></span>
+                Last year
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <h1 class="h2">Dashboard</h1>
+          <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group me-2">
+              <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
+              <span data-feather="calendar" class="align-text-bottom"></span>
+              Today
+            </button>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <h2 id="tankSection">Tank</h2>
+          <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">
+            Change profile
+          </button>
+
+          <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalLabel">New profile</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="container-fluid">
+                    <div class="row p-1">
+                      <div class="col-md-4 ms-auto">
+                        <h6>Parameter</h6>
+                      </div>
+                      <div class="col-md-4 ms-auto">
+                        <h6>Min</h6>
+                      </div>
+                      <div class="col-md-4 ms-auto">
+                        <h6>Max</h6>
+                      </div>
+                    </div>
+                    <div class="row p-1">
+                      <div class="col-md-4 ms-auto">pH</div>
+                      <div class="col-md-4 ms-auto">
+                        <input type="text" class="form-control form-control-sm" id="newpHmin">
+                      </div>
+                      <div class="col-md-4 ms-auto">
+                        <input type="text" class="form-control form-control-sm" id="newpHmax">
+                      </div>
+                    </div>
+                    <div class="row p-1">
+                      <div class="col-md-4 ms-auto">Temperature</div>
+                      <div class="col-md-4 ms-auto">
+                        <input type="text" class="form-control form-control-sm" id="newtmpmin">
+                      </div>
+                      <div class="col-md-4 ms-auto">
+                        <input type="text" class="form-control form-control-sm" id="newtmpmax">
+                      </div>
+                    </div>
+                    <div class="row p-1">
+                      <div class="col-md-4 ms-auto">Pressure</div>
+                      <div class="col-md-4 ms-auto">
+                        <input type="text" class="form-control form-control-sm" id="newpresmin">
+                      </div>
+                      <div class="col-md-4 ms-auto">
+                        <input type="text" class="form-control form-control-sm" id="newpresmax">
+                      </div>
+                    </div>
+                    <!-- <form>
+                      <div class="mb-3">
+                        <label for="recipient-name" class="col-form-label">Recipient:</label>
+                        <input type="text" class="form-control" id="recipient-name">
+                      </div>
+                      <div class="mb-3">
+                        <label for="message-text" class="col-form-label">Message:</label>
+                        <textarea class="form-control" id="message-text"></textarea>
+                      </div>
+                    </form> -->
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button id="saveProfile" type="button" class="btn btn-primary" data-bs-dismiss="modal">Save profile</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+        
+
+        <div class="d-flex justify-content-center flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+          <div class="shadow-lg p-5 bg-body rounded box w-100">
+            <div class="row">
+              <div class="col-sm-4 mb-3 mb-sm-0">
+                <div class="card">
+                  <div class="card-header">
+                    <h5> Identifier </h5>
+                  </div>
+                  <div class="card-body align-items-center d-flex justify-content-center">
+                    <div class="align-items-center d-flex justify-content-center w-100 h-100 fs-1 fw-bold">
+                      01
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-4 mb-3 mb-sm-0">
+                <div class="card">
+                  <div class="card-header">
+                    <h5> Status </h5>
+                  </div>
+                  <div class="card-body align-items-center d-flex justify-content-center">
+                    <div class="row w-100 h-100">
+                    <div id="status" class="col align-items-center d-flex justify-content-center fs-3 fw-semibold" style="color: green;">
+                      Everything is all right!
+                    </div>
+                    <!-- <div class="col-md-3 align-items-center d-flex justify-content-center"> -->
+                      <!-- <div data-feather="smile">
+
+                      </div> -->
+                    <!-- </div> -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-4 mb-3 mb-sm-0">
+                <div class="card">
+                  <div class="card-header">
+                    <h5> Coltivation profile </h5>
+                  </div>
+                  <div class="card-body">
+                    <div class="container text-center">
+                      <div class="row p-1">
+                        <div class="col align-items-left d-flex justify-content-left">
+                          <h6>Parameter</h6>
+                        </div>
+                        <div class="col">
+                          <h6>Min</h6>
+                        </div>
+                        <div class="col">
+                          <h6>Max</h6>
+                        </div>
+                      </div>
+                      <div class="row p-1">
+                        <div class="col align-items-left d-flex justify-content-left">
+                          pH
+                        </div>
+                        <div id="profilepHMin" class="col">
+                          1.5
+                        </div>
+                        <div id="profilepHMax" class="col">
+                          5.5
+                        </div>
+                      </div>
+                      <div class="row p-1">
+                        <div class="col align-items-left d-flex justify-content-left">
+                          Temperature
+                        </div>
+                        <div id="profileTempMin" class="col">
+                          17.0
+                        </div>
+                        <div id="profileTempMax" class="col">
+                          25.0
+                        </div>
+                      </div>
+                      <div class="row p-1">
+                        <div class="col align-items-left d-flex justify-content-left">
+                          Pressure
+                        </div>
+                        <div class="col">
+                          1.0
+                        </div>
+                        <div class="col">
+                          2.0
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h3 id="chartSection" > Nutritive solution </h3>
+        <canvas class="my-4 w-100" id="phChart" width="900" height="380"></canvas>
+
+        <h3> Environment </h3>
+        <canvas class="my-4 w-100" id="tempChart" width="900" height="380"></canvas>
+        <canvas class="my-4 w-100" id="pressChart" width="900" height="380"></canvas>
+      </main>
+    </div>
+  </div>
+
+
+  <script src="bootstrap-5.3.0-alpha1-dist/js/bootstrap.bundle.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"
+    integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE"
+    crossorigin="anonymous"></script>
+    
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"
+    integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha"
+    crossorigin="anonymous"></script>
+
+  <script src="https://code.jquery.com/jquery-3.6.3.min.js" 
+    integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" 
+    crossorigin="anonymous"></script>
+
+  <script src="js/dashboard.js"></script>
+
+  <script>
+  
+  function genRand(min, max, decimalPlaces) {  
+    var rand = Math.random()*(max-min) + min;
+    var power = Math.pow(10, decimalPlaces);
+    return Math.floor(rand*power) / power;
+}
+
+    // Define the data for the chart
+  var data = {
+      labels: [new Date().toUTCString()],
+      datasets: [{
+          label: "pH",
+          data: [0],
+          backgroundColor: "rgba(54, 162, 235, 0.2)",
+          borderColor: "rgba(54, 162, 235, 1)",
+          borderWidth: 1
+      }]
+  };
+
+  // Get the canvas element from the HTML
+  var ctx = document.getElementById("phChart").getContext("2d");
+
+  // Create the chart using the data and options
+  var phChart = new Chart(ctx, {
+      type: "line",
+      data: data,
+      options: {
+          scales: {
+              yAxes: [{
+                  ticks: {
+                      beginAtZero: true
+                  }
+              }]
+          }
+      }
+  });
+
+  // Update the chart data every 2 seconds
+  setInterval(function() {
+      data.labels.push(new Date().toUTCString());
+      data.datasets[0].data.push(2.5 + genRand(0.1 , 0.2, 2));
+      phChart.update();
+  }, 10000);
+
+  // ----------------
+
+  var dataTemp = {
+      labels: [new Date().toUTCString()],
+      datasets: [{
+          label: "Temperature",
+          data: [0],
+          backgroundColor: "rgba(54, 162, 235, 0.2)",
+          borderColor: "rgba(54, 162, 235, 1)",
+          borderWidth: 1
+      }]
+  };
+
+  // Get the canvas element from the HTML
+  var ctxTemp = document.getElementById("tempChart").getContext("2d");
+
+  // Create the chart using the data and options
+  var tempChart = new Chart(ctxTemp, {
+      type: "line",
+      data: dataTemp,
+      options: {
+          scales: {
+              yAxes: [{
+                  ticks: {
+                      beginAtZero: true
+                  }
+              }]
+          }
+      }
+  });
+
+  // Update the chart data every 2 seconds
+  setInterval(function() {
+      dataTemp.labels.push(new Date().toUTCString());
+      dataTemp.datasets[0].data.push(18.5 + genRand(0.1 , 0.3, 2));
+      tempChart.update();
+  }, 10000);
+
+  // -----------------------------------------
+
+  var dataPress = {
+      labels: [new Date().toUTCString()],
+      datasets: [{
+          label: "Pressure",
+          data: [0],
+          backgroundColor: "rgba(54, 162, 235, 0.2)",
+          borderColor: "rgba(54, 162, 235, 1)",
+          borderWidth: 1
+      }]
+  };
+
+  // Get the canvas element from the HTML
+  var ctxPress = document.getElementById("pressChart").getContext("2d");
+
+  // Create the chart using the data and options
+  var pressChart = new Chart(ctxPress, {
+      type: "line",
+      data: dataPress,
+      options: {
+          scales: {
+              yAxes: [{
+                  ticks: {
+                      beginAtZero: true
+                  }
+              }]
+          }
+      }
+  });
+
+  // Update the chart data every 2 seconds
+  setInterval(function() {
+    dataPress.labels.push(new Date().toUTCString());
+    dataPress.datasets[0].data.push(1.5 + genRand(0.15 , 0.35, 2));
+    pressChart.update();
+  }, 10000);
+
+  // setInterval(function() {
+  //     data.datasets[0].data.push({x: "March", y: 100});
+  //     myChart.update();
+  // }, 4000);
+  </script>
+</body>
+
+</html>
