@@ -6,7 +6,7 @@
 
 Welcome to HYDRA project!
 
-This project is an advanced and fully automated hydroponic monitoring system for growing plants in a soilless medium using nutrient-rich water. The system utilizes a range of sensors and actuators to monitor and control the growing environment, ensuring optimal conditions for the plants at all times.
+This project is a prototype for an advanced and fully automated hydroponic monitoring system for growing plants in a soilless medium using nutrient-rich water. The system utilizes a range of sensors and actuators to monitor and control the growing environment, ensuring optimal conditions for the plants at all times.
 
 The system includes a pH sensor to measure the acidity or alkalinity of the nutrient solution, a BMP280 sensor to measure temperature and atmospheric pressure, an LED semaphore to signal when conditions are outside of the optimal range, and an OLED display to provide real-time information about the growing environment.
 
@@ -82,8 +82,10 @@ The I2C interface uses the following pins:
 
 - **CSB**: Must be connected to VDDIO to select I2C interface
 
+#### Technical data
+
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/29161223/220340205-9d057c5b-aa1f-4bec-9021-a9b58046bad3.jpeg" width="55%"></img>
+  <img src="https://user-images.githubusercontent.com/29161223/220578996-55c8dfc8-090e-407b-afba-35890a7be6fd.jpeg" width="55%"></img>
 </p>
 
 
