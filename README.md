@@ -167,7 +167,7 @@ At last, but not least, for the MQTT transparent bridge we need to create a pyth
 
 ## Demo video
 
-[Here]() you can find a video presentation and demo of the project.
+[Here](https://youtu.be/xkqJkQ1bIZc) you can find a video presentation and demo of the project.
 
 ## Hackster article
 
