@@ -133,7 +133,9 @@ The OLED display is used to display real-time information about the pH, temperat
 
 #### U8g2 library
 
-U8g2 is a monochrome graphics library for embedded devices ... .
+[U8g2](https://github.com/olikraus/u8g2) is a monochrome graphics library for embedded devices for LCDs and OLEDs. It contains both drivers and high-level drawing routines.
+ 
+The library is originally written for Arduino boards, but it runs just fine on other platforms, as long as the right drivers are available.
 
 ## Network
 
