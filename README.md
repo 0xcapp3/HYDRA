@@ -168,3 +168,7 @@ At last, but not least, for the MQTT transparent bridge we need to create a pyth
 ## Demo video
 
 A video presentation and demo of the project can be found [here](...)
+
+## Hackster article
+
+[Here](https://www.hackster.io/cappellini1693930/hydroponic-autonomous-monitoring-system-9817d4) you can find the Hackster article of this project.
