@@ -103,12 +103,12 @@ pH sensors are commonly used in a wide variety of applications, including water 
 
 ### Specifications
 
-- Module Power : 5.00V
-- Module Size : 43mm×32mm
-- Measuring Range:0-14PH
-- Measuring Temperature :0-60 ℃
-- Accuracy : ± 0.1pH (25 ℃)
-- Response Time : ≤ 1min
+- **Module Power**: 5.00V
+- **Module Size**: 43mm×32mm
+- **Measuring Range**:0-14PH
+- **Measuring Temperature**:0-60 ℃
+- **Accuracy**: ± 0.1pH (25 ℃)
+- **Response Time**: ≤ 1min
 - pH Sensor with BNC Connector
 - PH2.0 Interface ( 3 foot patch )
 - Gain Adjustment Potentiometer
