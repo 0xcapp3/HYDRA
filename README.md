@@ -147,6 +147,10 @@ Latencies are short enough to not affect the usability of the system and are com
 
 Data is transmitted every `n` seconds depending on needs. Clearly there will be overhead due to headers necessary to transmit the messages. MQTT-SN was chosen as the protocol to transmit messages because of its characteristics suitable for IoT applications, in particular for its small overhead.
 
+## User interface
+
+The user interface is a simple dashboard based on Bootstrap 5.3. It allows the user to visualize all data coming from the system and if necessary change the coltivation profile.
+
 ## How to run
 ### Setup
 
