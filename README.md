@@ -161,10 +161,14 @@ Moreover be sure to have `pipenv` installed.
 
 To start HYDRA both `flash_run.sh` and `term_run.sh` scripts are provided. The first will flash the firmware and then execute it whereas the second one will only start the device. Both will initialize the EthOS serial connection.
 
-Along that it is necessary to start mosquitto with the following command inside its folder: `./broker_mqtts conf.conf` (?).
+Along that it is necessary to start mosquitto with the following command inside its folder: `./broker_mqtts broker.conf`.
 
 At last, but not least, for the MQTT transparent bridge we need to create a python virtual environemt using `pipenv` and the dedicated `Pipfile`. At first go inside bridge folder and run `pipenv shell`, then `pipenv install`. Once we have our environment ready we can run it with the following command: `python3 transparent_bridge.py`.
 
 ## Demo video
 
-A video presentation and demo of the project can be found [here](...)
+[Here](https://youtu.be/xkqJkQ1bIZc) you can find a video presentation and demo of the project.
+
+## Hackster article
+
+[Here](https://www.hackster.io/cappellini1693930/hydroponic-autonomous-monitoring-system-9817d4) you can find the Hackster article of the project.
